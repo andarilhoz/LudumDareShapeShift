@@ -53,8 +53,8 @@ public class PlayerController : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         player = this.gameObject;
 
-        monster = player.transform.Find("Mutante").gameObject;
-        mage    = player.transform.Find("Mago").gameObject;
+        monster = player.transform.Find("Hyde").gameObject;
+        mage    = player.transform.Find("Jekyll").gameObject;
         gManagerObject = GameObject.Find("GameController");
         gManager = gManagerObject.GetComponent<GameManager>();
         coolDown = coolDownShapeShift;
@@ -108,7 +108,6 @@ public class PlayerController : MonoBehaviour
             transform.Rotate(0, h * rotateSpeed, 0);
         }
 
-        Debug.Log(transform.position.z / 100);
         velocidadePlayer = velocidadeInicial +  (transform.position.z / 300);
 
         if (velocidadePlayer >= velocidadeMaxima) {
