@@ -46,6 +46,8 @@ public class PlayerController : MonoBehaviour
 
     private AudioSource passos;
 
+    private bool isAlive = true;
+
 
     void Start()
     {
@@ -63,78 +65,82 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
-
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (isAlive)
         {
-            gManager.exitGame();
-        }
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                gManager.exitGame();
+            }
 
             if (Input.GetKey(KeyCode.Space) && coolDown <= 0)
-        {
-            wizardsRules = !wizardsRules;
-            coolDown = coolDownShapeShift;
+            {
+                wizardsRules = !wizardsRules;
+                coolDown = coolDownShapeShift;
+            }
+
+            if (wizardsRules)
+            {
+                monster.SetActive(false);
+                mage.SetActive(true);
+            }
+            else {
+                monster.SetActive(true);
+                mage.SetActive(false);
+            }
+
+            if (Input.GetKey(KeyCode.X))
+            {
+                AhhMorreuPoOlhaAi();
+            }
+
+            coolDown -= Time.deltaTime;
+
+            bool direita = (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow));
+            bool esquerda = (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow));
+
+            if (direita && player.transform.rotation.y <= -maxCurve)
+            {
+                h = 0f;
+            }
+            else if (esquerda && player.transform.rotation.y >= maxCurve)
+            {
+                h = 0f;
+            }
+            else if ((player.transform.rotation.y >= -maxCurve && direita) || (esquerda && player.transform.rotation.y <= maxCurve))
+            {
+                h = Input.GetAxis("Horizontal");
+                transform.Rotate(0, h * rotateSpeed, 0);
+            }
+
+            velocidadePlayer = velocidadeInicial + (transform.position.z / 300);
+
+            if (velocidadePlayer >= velocidadeMaxima)
+            {
+                velocidadePlayer = velocidadeMaxima;
+            }
+
+            float v = velocidadePlayer;
+            rb.useGravity = true;
+
+            velocity = new Vector3(0, 0, v);
+            velocity = transform.TransformDirection(velocity);
+            if (v > 0.1)
+            {
+                velocity *= forwardSpeed;
+            }
+            else if (v < -0.1)
+            {
+                velocity *= backwardSpeed;
+            }
+
+            transform.localPosition += velocity * Time.fixedDeltaTime;
         }
-
-        if (wizardsRules)
-        {
-            monster.SetActive(false);
-            mage.SetActive(true);
-        }
-        else {
-            monster.SetActive(true);
-            mage.SetActive(false);
-        }
-
-        if (Input.GetKey(KeyCode.X)) {
-            AhhMorreuPoOlhaAi();
-        }
-
-        coolDown -= Time.deltaTime;
-
-        bool direita = (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow));
-        bool esquerda = (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow));
-
-        if (direita && player.transform.rotation.y <= -maxCurve)
-        {
-            h = 0f;
-        }
-        else if (esquerda && player.transform.rotation.y >= maxCurve)
-        {
-            h = 0f;
-        }
-        else if((player.transform.rotation.y >= -maxCurve && direita)||(esquerda && player.transform.rotation.y <= maxCurve))
-        {
-            h = Input.GetAxis("Horizontal");
-            transform.Rotate(0, h * rotateSpeed, 0);
-        }
-
-        velocidadePlayer = velocidadeInicial +  (transform.position.z / 300);
-
-        if (velocidadePlayer >= velocidadeMaxima) {
-            velocidadePlayer = velocidadeMaxima;
-        }
-
-        float v = velocidadePlayer;
-        rb.useGravity = true;
-
-        velocity = new Vector3(0, 0, v);
-        velocity = transform.TransformDirection(velocity);
-        if (v > 0.1)
-        {
-            velocity *= forwardSpeed;
-        }
-        else if (v < -0.1)
-        {
-            velocity *= backwardSpeed;
-        }
-
-        transform.localPosition += velocity * Time.fixedDeltaTime;
-
         
     }
 
     void AhhMorreuPoOlhaAi()
     {
+        isAlive = false;
         velocidadePlayer = 0f;
         HUDScreen.SetActive(false);
         gameOverScreen.SetActive(true);
