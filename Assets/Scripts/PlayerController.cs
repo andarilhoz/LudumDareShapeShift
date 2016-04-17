@@ -3,6 +3,8 @@ using System.Collections;
 
 [RequireComponent(typeof(CapsuleCollider))]
 [RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(AudioSource))]
+
 
 public class PlayerController : MonoBehaviour
 
@@ -10,6 +12,8 @@ public class PlayerController : MonoBehaviour
     public bool wizardsRules = true;
     public float animSpeed = 1.5f;
     public bool useCurves = true;
+
+    public float timerGameOver = 5;
 
     public float velocidadeMaxima;
     public float velocidadeInicial;
@@ -48,6 +52,18 @@ public class PlayerController : MonoBehaviour
 
     private bool isAlive = true;
 
+    public AudioClip mageTurn;
+    public AudioClip monsterTurn;
+    public AudioClip stepSound;
+
+
+    public GameObject jenkyll;
+    public GameObject hyde;
+
+    private Animation animationJenkyll;
+    private Animation animationHyde;
+
+
 
     void Start()
     {
@@ -60,13 +76,17 @@ public class PlayerController : MonoBehaviour
         gManagerObject = GameObject.Find("GameController");
         gManager = gManagerObject.GetComponent<GameManager>();
         coolDown = coolDownShapeShift;
-        
+
+        animationJenkyll = jenkyll.GetComponent<Animation>();
+        animationHyde = hyde.GetComponent<Animation>();
+
     }
 
     void FixedUpdate()
     {
         if (isAlive)
         {
+            AudioSource som = GetComponent<AudioSource>();
             if (Input.GetKeyDown(KeyCode.Escape))
             {
                 gManager.exitGame();
@@ -76,18 +96,31 @@ public class PlayerController : MonoBehaviour
             {
                 wizardsRules = !wizardsRules;
                 coolDown = coolDownShapeShift;
+
+                if (wizardsRules)
+                    som.clip = mageTurn;
+                else
+                    som.clip = monsterTurn;
+                som.Play();
+               
+                
+
             }
 
             if (wizardsRules)
             {
+
+
                 monster.SetActive(false);
                 mage.SetActive(true);
             }
             else {
+
                 monster.SetActive(true);
                 mage.SetActive(false);
             }
 
+            /*
             if (Input.GetKey(KeyCode.X))
             {
                 AhhMorreuPoOlhaAi();
@@ -96,6 +129,7 @@ public class PlayerController : MonoBehaviour
             {
                 gManager.restartGame();
             }
+            */
 
             coolDown -= Time.deltaTime;
 
@@ -139,11 +173,25 @@ public class PlayerController : MonoBehaviour
 
             transform.localPosition += velocity * Time.fixedDeltaTime;
         }
+        else {
+            timerGameOver -= Time.deltaTime;
+            gManager.CountDown(timerGameOver);
+            if (timerGameOver < 0)
+            {
+                gManager.restartGame();
+            }
+        }
         
     }
 
     void AhhMorreuPoOlhaAi()
     {
+        if (wizardsRules)
+            animationJenkyll.Play("tripping");
+        else
+            animationHyde.Play("tripping");
+
+
         isAlive = false;
         velocidadePlayer = 0f;
         HUDScreen.SetActive(false);
@@ -160,27 +208,48 @@ public class PlayerController : MonoBehaviour
             Destroy(collision.gameObject);
             gManager.getOrb();
             if (wizardsRules)
+            {
                 alinhamento++;
-            else
+                GameObject sli = GameObject.Find("Slider");
+                if(alinhamento<=9)
+                    sli.transform.position += new Vector3(20f, 0, 0);
+                else
+                    AhhMorreuPoOlhaAi();
+            }
+            else {
                 alinhamento--;
+                GameObject sli = GameObject.Find("Slider");
+                if (alinhamento >= -9)
+                    sli.transform.position -= new Vector3(20f, 0, 0);
+                else
+                    AhhMorreuPoOlhaAi();
+            }
         }
-        else if (collision.gameObject.name == "CoolZone")
+      
+    }
+    void OnTriggerEnter(Collider col) {
+        if (col.gameObject.tag == "CoolZone")
         {
-            if (wizardsRules) {
-                
+            Debug.Log("Colidiu");
+            if (wizardsRules)
+            {
+
             }
             else {
-
+                AhhMorreuPoOlhaAi();
             }
 
         }
-        else if (collision.gameObject.name == "DangerZone")
+    
+        else if (col.gameObject.tag == "DangerZone")
         {
-            if (wizardsRules) {
-
+            Debug.Log("Colidiu");
+            if (wizardsRules)
+            {
+                AhhMorreuPoOlhaAi();
             }
             else {
-
+                    
             }
         }
     }

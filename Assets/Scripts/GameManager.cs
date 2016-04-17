@@ -10,6 +10,10 @@ public class GameManager : MonoBehaviour
     public GameObject pontosText;
     public int pontosPorOrb;
     public GameObject gameOverScreen;
+    public GameObject HUDScreen;
+
+    public Sprite caraJenkyl;
+    public Sprite caraHyde;
 
     private AudioSource sound;
     private Text txt;
@@ -17,12 +21,17 @@ public class GameManager : MonoBehaviour
 
     private Text[] textos;
 
+    public GameObject Player;
+    private PlayerController pController;
 
+    public Image faceTime;
     // Use this for initialization
     void Start()
     {
         txt = pontosText.GetComponent<Text>();
         sound = GetComponent<AudioSource>();
+        Player = GameObject.Find("Player");
+        pController = Player.GetComponent<PlayerController>();
 
     }
 
@@ -30,6 +39,14 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         txt.text = pontuacao + "pts";
+
+        if (pController.wizardsRules)
+            faceTime.sprite = caraJenkyl;
+        else
+            faceTime.sprite = caraHyde;
+            
+
+
 
     }
 
@@ -60,4 +77,17 @@ public class GameManager : MonoBehaviour
     {
         Application.Quit();
     }
+
+    public void CountDown(float i) {
+        textos = gameOverScreen.GetComponentsInChildren<Text>();
+
+        foreach (Text t in textos)
+        {
+            if (t.name == "CountDown")
+            {
+                t.text = "Restart in: "+ Mathf.Round(i);
+            }
+        }
+    }
+
 }
