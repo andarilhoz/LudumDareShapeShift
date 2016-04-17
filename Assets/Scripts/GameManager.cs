@@ -58,7 +58,6 @@ public class GameManager : MonoBehaviour
     }
     public void exitGame()
     {
-        Debug.Log("Era pra sair");
         Application.Quit();
     }
 }
