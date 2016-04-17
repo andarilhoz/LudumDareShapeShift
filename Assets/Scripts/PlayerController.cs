@@ -11,12 +11,16 @@ public class PlayerController : MonoBehaviour
     public float animSpeed = 1.5f;
     public bool useCurves = true;
 
+    public float velocidadePlayer = 1f;
+
     public float useCurvesHeight = 0.5f;
 
     public float forwardSpeed = 7.0f;
     public float backwardSpeed = 2.0f;
     public float rotateSpeed = 2.0f;
     public float maxCurve = 0.3f;
+
+    public float coolDownShapeShift;
 
     private CapsuleCollider col;
     private Rigidbody rb;
@@ -27,8 +31,19 @@ public class PlayerController : MonoBehaviour
     private GameObject player;
     private float h;
 
+    public float coolDown = 0f;
+
     private GameObject gManagerObject;
     private GameManager gManager;
+
+    private int alinhamento;
+
+    public GameObject gameOverScreen;
+    public GameObject HUDScreen;
+
+    private AudioSource passos;
+
+
     void Start()
     {
         col = GetComponent<CapsuleCollider>();
@@ -39,10 +54,34 @@ public class PlayerController : MonoBehaviour
         mage    = player.transform.Find("Mago").gameObject;
         gManagerObject = GameObject.Find("GameController");
         gManager = gManagerObject.GetComponent<GameManager>();
+        coolDown = coolDownShapeShift;
+        
     }
 
     void FixedUpdate()
     {
+        if (Input.GetKey(KeyCode.Space) && coolDown <= 0)
+        {
+            wizardsRules = !wizardsRules;
+            coolDown = coolDownShapeShift;
+        }
+
+        if (wizardsRules)
+        {
+            monster.SetActive(false);
+            mage.SetActive(true);
+        }
+        else {
+            monster.SetActive(true);
+            mage.SetActive(false);
+        }
+
+        if (Input.GetKey(KeyCode.X)) {
+            AhhMorreuPoOlhaAi();
+        }
+
+        coolDown -= Time.deltaTime;
+
         bool direita = (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow));
         bool esquerda = (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow));
 
@@ -60,7 +99,7 @@ public class PlayerController : MonoBehaviour
             transform.Rotate(0, h * rotateSpeed, 0);
         }
 
-        float v = 1f;
+        float v = velocidadePlayer;
         rb.useGravity = true;
 
         velocity = new Vector3(0, 0, v);
@@ -77,27 +116,48 @@ public class PlayerController : MonoBehaviour
         transform.localPosition += velocity * Time.fixedDeltaTime;
 
         
+    }
 
-        if (Input.GetKeyDown(KeyCode.Space)) {
-            wizardsRules = !wizardsRules;
+    void AhhMorreuPoOlhaAi()
+    {
+        velocidadePlayer = 0f;
+        HUDScreen.SetActive(false);
+        gameOverScreen.SetActive(true);
+        gManager.setScore();
+        if (wizardsRules) { 
+            passos = GetComponent<AudioSource>();
+            passos.Stop();
         }
-
-        if (wizardsRules)
-        {
-            monster.SetActive(false);
-            mage.SetActive(true);
-        }
-        else {
-            monster.SetActive(true);
-            mage.SetActive(false);
-        }
-
     }
 
     void OnCollisionEnter(Collision collision) {
         if (collision.gameObject.tag == "Vibes") {
             Destroy(collision.gameObject);
             gManager.getOrb();
+            if (wizardsRules)
+                alinhamento++;
+            else
+                alinhamento--;
+        }
+        else if (collision.gameObject.name == "CoolZone")
+        {
+            if (wizardsRules) {
+                
+            }
+            else {
+
+            }
+
+        }
+        else if (collision.gameObject.name == "DangerZone")
+        {
+            if (wizardsRules) {
+
+            }
+            else {
+
+            }
         }
     }
+
 }

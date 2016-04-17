@@ -11,6 +11,9 @@ public class ScenarioManager : MonoBehaviour {
 
     public float maxLarg;
     public float minLarg;
+    public float maxPlatformers;
+
+    public float maxTrees;
 
     public float maxCenario;
 
@@ -22,6 +25,9 @@ public class ScenarioManager : MonoBehaviour {
     private GameObject[] arvoresEsquerda;
 
     private float distancia;
+
+    private int trees;
+
     // Use this for initialization
     void Start () {
         groundCollider = ground.gameObject.GetComponent<BoxCollider>();
@@ -34,12 +40,13 @@ public class ScenarioManager : MonoBehaviour {
 	void Update () {
         grounds = GameObject.FindGameObjectsWithTag("Ground").Length;
         bgGrounds = GameObject.FindGameObjectsWithTag("GroundBG").Length;
+        trees = GameObject.FindGameObjectsWithTag("RightTree").Length + GameObject.FindGameObjectsWithTag("LeftTree").Length;
 
-
-        if (grounds <= 17) {
+        if (grounds <= maxPlatformers) {
             createPlatform();
             criaCenarioAmplo();
         }
+
 
         distancia = 0f;
         
@@ -48,7 +55,7 @@ public class ScenarioManager : MonoBehaviour {
     void createPlatform() {
         transform.position += new Vector3(0, 0, size.x);
         Instantiate(ground, this.transform.position, transform.rotation);
-
+        Instantiate(groundBG, new Vector3(3f, -0.2f, this.transform.position.z), Quaternion.identity);
         for (var i = 0; i < 8; i++)
         {
             int escolhida = Random.Range(0, arvoresDireita.Length );
@@ -74,8 +81,8 @@ public class ScenarioManager : MonoBehaviour {
     }
 
     void criaCenarioAmplo() {
-        Instantiate(groundBG, new Vector3(3f,-0.2f,this.transform.position.z), Quaternion.identity);
-        for (var i = 0; i < 8; i++)
+        distancia = 0f;
+        for (var i = 0; i < 60; i++)
         {
             int escolhida = Random.Range(0, arvoresDireita.Length - 1);
             GameObject arvore = (GameObject)arvoresDireita[escolhida];
@@ -83,18 +90,20 @@ public class ScenarioManager : MonoBehaviour {
             distancia += Random.Range(minOffset, maxOffset);
 
             float largeDistance = Random.Range(minLarg, maxCenario);
-            Instantiate(arvore, new Vector3(3f + largeDistance, 1f, this.transform.position.z - size.x + distancia), Quaternion.identity);
+            if (trees <= maxTrees)
+                Instantiate(arvore, new Vector3(3f + largeDistance, 1f, this.transform.position.z - size.x + distancia), Quaternion.identity);
         }
+        distancia = 0f;
 
-        for (var i = 0; i < 8; i++)
+        for (var i = 0; i < 60; i++)
         {
             int escolhida = Random.Range(0, arvoresEsquerda.Length - 1);
             GameObject arvore = (GameObject)arvoresEsquerda[escolhida];
 
             distancia += Random.Range(minOffset, maxOffset);
             float largeDistance = Random.Range(minLarg, maxCenario);
-
-            Instantiate(arvore, new Vector3(-3f - largeDistance, 1f, this.transform.position.z - size.x + distancia), Quaternion.identity);
+            if (trees <= maxTrees)
+                Instantiate(arvore, new Vector3(-3f - largeDistance, 1f, this.transform.position.z - size.x + distancia), Quaternion.identity);
         }
 
     }
