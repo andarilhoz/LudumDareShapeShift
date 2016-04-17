@@ -92,6 +92,10 @@ public class PlayerController : MonoBehaviour
             {
                 AhhMorreuPoOlhaAi();
             }
+            if (Input.GetKey(KeyCode.Z))
+            {
+                gManager.restartGame();
+            }
 
             coolDown -= Time.deltaTime;
 

@@ -11,11 +11,11 @@ public class ZoneManager : MonoBehaviour
     public float maxDistance;
     public float minDistance;
     private int choose;
-    private float playerPos = GameObject.FindGameObjectWithTag("Player").transform.position.z;
 
     // Use this for initialization
     void Start()
     {
+
 
     }
 

@@ -7,15 +7,15 @@ public class ItenManager : MonoBehaviour {
     private int vibez;
     public float maxDistance;
     public float minDistance;
-    private float playerPos = GameObject.FindGameObjectWithTag("Player").transform.position.z;
 
 	// Use this for initialization
 	void Start () {
-	
-	}
+        
+    }
 	
 	// Update is called once per frame
 	void Update () {
+
         vibez = GameObject.FindGameObjectsWithTag("Vibes").Length;
         if (vibez <= 50) {
             float acrescenta = Random.Range(minDistance, maxDistance);
