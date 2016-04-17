@@ -11,6 +11,9 @@ public class PlayerController : MonoBehaviour
     public float animSpeed = 1.5f;
     public bool useCurves = true;
 
+    public float velocidadeMaxima;
+    public float velocidadeInicial;
+
     public float velocidadePlayer = 1f;
 
     public float useCurvesHeight = 0.5f;
@@ -60,7 +63,13 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (Input.GetKey(KeyCode.Space) && coolDown <= 0)
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            gManager.exitGame();
+        }
+
+            if (Input.GetKey(KeyCode.Space) && coolDown <= 0)
         {
             wizardsRules = !wizardsRules;
             coolDown = coolDownShapeShift;
@@ -97,6 +106,13 @@ public class PlayerController : MonoBehaviour
         {
             h = Input.GetAxis("Horizontal");
             transform.Rotate(0, h * rotateSpeed, 0);
+        }
+
+        Debug.Log(transform.position.z / 100);
+        velocidadePlayer = velocidadeInicial +  (transform.position.z / 300);
+
+        if (velocidadePlayer >= velocidadeMaxima) {
+            velocidadePlayer = velocidadeMaxima;
         }
 
         float v = velocidadePlayer;
