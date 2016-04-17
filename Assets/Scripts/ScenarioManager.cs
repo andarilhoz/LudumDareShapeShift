@@ -3,6 +3,7 @@ using System.Collections;
 
 public class ScenarioManager : MonoBehaviour {
     public GameObject ground;
+    public GameObject groundBG;
     public Vector3 size;
 
     public float minOffset;
@@ -15,6 +16,7 @@ public class ScenarioManager : MonoBehaviour {
 
     private BoxCollider groundCollider;
     private int grounds;
+    private int bgGrounds;
 
     private GameObject[] arvoresDireita;
     private GameObject[] arvoresEsquerda;
@@ -31,6 +33,8 @@ public class ScenarioManager : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         grounds = GameObject.FindGameObjectsWithTag("Ground").Length;
+        bgGrounds = GameObject.FindGameObjectsWithTag("GroundBG").Length;
+
 
         if (grounds <= 17) {
             createPlatform();
@@ -70,7 +74,7 @@ public class ScenarioManager : MonoBehaviour {
     }
 
     void criaCenarioAmplo() {
-
+        Instantiate(groundBG, new Vector3(3f,-0.2f,this.transform.position.z), Quaternion.identity);
         for (var i = 0; i < 8; i++)
         {
             int escolhida = Random.Range(0, arvoresDireita.Length - 1);
@@ -94,4 +98,5 @@ public class ScenarioManager : MonoBehaviour {
         }
 
     }
+
 }
