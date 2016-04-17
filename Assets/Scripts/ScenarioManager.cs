@@ -47,7 +47,7 @@ public class ScenarioManager : MonoBehaviour {
 
         for (var i = 0; i < 8; i++)
         {
-            int escolhida = Random.Range(0, arvoresDireita.Length - 1);
+            int escolhida = Random.Range(0, arvoresDireita.Length );
             GameObject arvore = (GameObject)arvoresDireita[escolhida];
 
             distancia += Random.Range(minOffset, maxOffset);

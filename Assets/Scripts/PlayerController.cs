@@ -16,6 +16,8 @@ public class PlayerController : MonoBehaviour
     public float forwardSpeed = 7.0f;
     public float backwardSpeed = 2.0f;
     public float rotateSpeed = 2.0f;
+    public float maxCurve = 0.3f;
+
     private CapsuleCollider col;
     private Rigidbody rb;
     private Vector3 velocity;
@@ -23,7 +25,10 @@ public class PlayerController : MonoBehaviour
     private GameObject mage;
     private GameObject monster;
     private GameObject player;
+    private float h;
 
+    private GameObject gManagerObject;
+    private GameManager gManager;
     void Start()
     {
         col = GetComponent<CapsuleCollider>();
@@ -32,12 +37,29 @@ public class PlayerController : MonoBehaviour
 
         monster = player.transform.Find("Mutante").gameObject;
         mage    = player.transform.Find("Mago").gameObject;
-
+        gManagerObject = GameObject.Find("GameController");
+        gManager = gManagerObject.GetComponent<GameManager>();
     }
 
     void FixedUpdate()
     {
-        float h = Input.GetAxis("Horizontal");
+        bool direita = (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow));
+        bool esquerda = (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow));
+
+        if (direita && player.transform.rotation.y <= -maxCurve)
+        {
+            h = 0f;
+        }
+        else if (esquerda && player.transform.rotation.y >= maxCurve)
+        {
+            h = 0f;
+        }
+        else if((player.transform.rotation.y >= -maxCurve && direita)||(esquerda && player.transform.rotation.y <= maxCurve))
+        {
+            h = Input.GetAxis("Horizontal");
+            transform.Rotate(0, h * rotateSpeed, 0);
+        }
+
         float v = 1f;
         rb.useGravity = true;
 
@@ -54,7 +76,7 @@ public class PlayerController : MonoBehaviour
 
         transform.localPosition += velocity * Time.fixedDeltaTime;
 
-        transform.Rotate(0, h * rotateSpeed, 0);
+        
 
         if (Input.GetKeyDown(KeyCode.Space)) {
             wizardsRules = !wizardsRules;
@@ -70,5 +92,12 @@ public class PlayerController : MonoBehaviour
             mage.SetActive(false);
         }
 
+    }
+
+    void OnCollisionEnter(Collision collision) {
+        if (collision.gameObject.tag == "Vibes") {
+            Destroy(collision.gameObject);
+            gManager.getOrb();
+        }
     }
 }
